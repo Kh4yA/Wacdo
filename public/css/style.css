@@ -66,6 +66,9 @@ body {
 .space-between {
   justify-content: space-between;
 }
+.space-arround{
+  justify-content: space-around;
+}
 .item-center {
   align-items: center;
 }
@@ -129,7 +132,6 @@ border: none;
 }
 .accueil-choice {
   position: fixed;
-  flex-direction: column;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -246,7 +248,7 @@ dialog{
 }
 .modal-choice-content{
   flex-direction: column;
-  width: 60%;
+  width: 70%;
   gap: 30px;
 }
 .modal-title{
@@ -255,13 +257,13 @@ dialog{
 }
 .modal-text{
   font-family: var(--font-primary-bold);
-  font-weight: 18px;
+  font-size: 18px;
 }
 .modal-card, .card-modal{
   border: 4px solid var(--tertiary-color);
   border-radius: 8px;
   width: 300px;
-  height: 260px;
+  height: 325px;
   cursor: pointer;
 }
 .card-modal{
@@ -270,7 +272,7 @@ dialog{
   padding: 10px;
 }
 .card-modal img{
-  width: 50%;
+  width: 80%;
   height: 100%;
   object-fit: contain;
 }
@@ -295,10 +297,9 @@ margin: 0 auto;
     border: 1px solid var(--tertiary-color);
     border-radius: 8px;
     width: 100%;
-    max-width: 190px;
-    max-height: 220px;
+    max-width: 220px;
+    max-height: 270px;
     padding: 10px 5px;
-    width: 100%;
     height: 100%;
 }
 .active{
@@ -366,4 +367,76 @@ margin: 0 auto;
 }
 .order-price p {
   font-size: 22px;
+}
+/********** CHOICE-EASAEL ************/
+.choice-easel{
+  position: fixed;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 43%;
+  height: 40%;
+  background-color: #fff;
+  border-radius: 18px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+}
+.choice-easel-content {
+  flex-direction: column;
+  gap: 40px;
+  height: 50%;
+}
+.choice-easel-content :first-child {
+  font-family: var(--font-primary-bold);
+  padding-bottom: 20px;
+}
+.choice-easel-content :nth-child(2) {
+  font-family: var(--font-primary-bold);
+  font-size: 28px;
+}
+.choice-easel form{
+  width: 100%;
+  height: 20vh;
+  gap: 20px;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  border: none;
+  font-size: 96px;
+  font-family: var(--font-primary-bold);
+  width: 155px;
+  height: 50%;
+  text-align: center;
+  border-bottom:15px solid #d9d9d9;
+}
+/* Chrome */
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button { 
+-webkit-appearance: none;
+margin:0;
+}
+/* Opéra*/
+input::-o-inner-spin-button,
+input::-o-outer-spin-button { 
+-o-appearance: none;
+margin:0
+}
+#btnEasel{
+  position: fixed;
+  bottom: -30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.easel-img{
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/************** CONFIRMATION **********/ 
+#btnNew{
+  position: fixed;
+  bottom: -30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./public/css/style.css">
+    <title>Pour être servis à table</title>
+</head>
+
+<body>
+    <div class="banner"></div>
+    <div class="modal-easel-choice">
+        <div class="easel-img"><img src="./public/wacdo/images/img-easel.png"
+                alt="illustration representant un chavalet"></div>
+        <section class="choice-easel">
+            <div class="choice-easel-content padding20px padding-bottom flex space-between">
+                <p class="font-size42px">Pour être servis à table,</p>
+                <p>Récupérez un chevalet et indiquez ici le numéro inscrit dessus</p>
+            </div>
+            <form action="" method="POST" class="flex justify-center item-center" id="easelForm">
+                <input type="number" name="num1" id="num1" autofocus maxlength="1">
+                <input type="number" name="num2" id="num2" maxlength="1">
+                <input type="number" name="num3" id="num3" maxlength="1">
+                <div><button type="submit" class=" btn-first" id="btnEasel">Enregister le numéro</button></div>
+            </form>
+        </section>
+    </div>
+    <script type="module" src="./public/js/validate.js"></script>
+</body>
+</html>
