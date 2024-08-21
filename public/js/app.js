@@ -1,4 +1,5 @@
 import addCart from "./addCart.js";
+import hydratebubble from "./cartResponsive.js";
 /***********  RECCUPERATION ET TRAITEMENT DE L'URL ***********/
 // Récupère l'URL actuelle
 const url = document.location.href;
@@ -32,6 +33,7 @@ window.addEventListener('load', () => {
     nameCategory('menus')
     refreshOrderInfo()
     createTempalteCart()
+    hydratebubble()
 })
 /********** AJAX ***********/
 /********** gerer l'etat selectionner ou non des cartes **********/
@@ -422,6 +424,7 @@ async function createModalMenu(title, text, image1, image2, choiceOne, choiceTwo
         dialog.close()
         dialog.remove()
         createTempalteCart()
+        hydratebubble()
     });
 }
 /**
@@ -524,6 +527,7 @@ async function createModalOther(category, idProduit) {
         dialogOther.remove()
         createTempalteCart()
         console.log(storage);
+        hydratebubble()
     })
     console.log(storage);
     //gestion des boutons
