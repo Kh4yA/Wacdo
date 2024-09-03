@@ -14,7 +14,6 @@ console.log(localStorage);
 export function countItem() {
     let countMenu = 0
     let countOther = 0
-    let nbItemOther = 0
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith('menu')) {

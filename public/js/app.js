@@ -575,7 +575,7 @@ async function extractDatas(value = "") {
 function refreshOrderInfo() {
     const orderInfo = document.querySelector('.order-info')
     orderInfo.innerHTML =
-        `
+    `
     <p>Commande numéro</p>
     ${JSON.parse(storage.getItem('restauration'))[0].restauration === 'sur_place' ? '<p>Sur place</p>' : 
     `<p>${JSON.parse(storage.getItem('restauration'))[0].restauration}</p>`}
