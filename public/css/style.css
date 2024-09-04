@@ -148,6 +148,11 @@ button {
   border-radius: 18px;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
 }
+.accueil-choice a .img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .accueil-choice a img {
   width: fit-content;
   height: auto;
@@ -159,7 +164,6 @@ button {
 }
 .accueil-choice :first-child {
   font-family: var(--font-primary-bold);
-  padding-bottom: 20px;
 }
 .accueil-choice :nth-child(2) {
   font-family: var(--font-primary-bold);
@@ -367,6 +371,9 @@ dialog {
 .cart-content ul {
   padding-left: 20px;
 }
+.order-number{
+  padding: 5px;
+}
 /* Prix de la commande du cart-container */
 .order-price {
   position: fixed;
@@ -470,7 +477,6 @@ input::-o-outer-spin-button {
   }
   .order-info {
     display: flex;
-    flex-direction: column;
     align-items: center;
   }
   .order-price div:nth-child(3) {
@@ -480,7 +486,7 @@ input::-o-outer-spin-button {
     padding: 0;
   }
   .cart-content {
-    width: 50%;
+    width: 100%;
   }
   .container-item {
     height: 75%;
@@ -491,8 +497,17 @@ input::-o-outer-spin-button {
   }
 }
 /* media query tablette */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 790px) {
+  .card-modal p{
+    font-size: 16px;
+  }
   /* GENERALITE */
+.accueil-choice :nth-child(2){
+  font-size: 18px;
+}
+.accueil-choice :first-child{
+  font-size: 24px;
+}
   .padding20px{
     padding: 10px;
   }
@@ -536,14 +551,18 @@ input::-o-outer-spin-button {
     width: 100%;
     height: 15vh;
   }
+  .order-price div:nth-child(2){
+    justify-content: flex-start;
+    gap: 30px;
+  }
   .cart-header{
     display: flex;
     justify-content: space-between;
-    height: 5vh;
+    height: 7vh;
   }
   .order-number{
     flex-direction: row;
-    width: 50%;
+    width:70%;
     max-height: 10vh;
   }
   .logo-cart{
@@ -563,8 +582,8 @@ input::-o-outer-spin-button {
   }
   .cart-device{
     position: fixed;
-    right: 20px;
-    bottom: 20px;
+    right: 10px;
+    bottom: 30px;
     display: block;
     background-color: var(--color-five);
     width: 70px;
@@ -602,16 +621,18 @@ input::-o-outer-spin-button {
   }
   .modal-choice-content div:nth-child(2){
     gap: 10px;
-    flex-wrap: wrap;
   }
   .card-modal{
-    height: 220px;
-    width: 170px;
+    height: 200px;
+    width: 150px;
   }
   .card-modal img{
     width: 50%;
     height: 50%;
     object-fit: cover;
+  }
+  .order-info span{
+    font-size: 18px;
   }
   .select-quantity{
     width: 60%;
@@ -641,7 +662,9 @@ input::-o-outer-spin-button {
 @media screen and (max-width: 600px) {
   .card-item{
     width: 40%;
-    height: 35%;
+    height: 40%;
+    gap: 2px;
+    overflow: hidden;
   }
   .card-item img{
     width: 70%;

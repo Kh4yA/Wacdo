@@ -20,7 +20,7 @@ export function countItem() {
             const dataItem = JSON.parse(localStorage.getItem(key))
             countMenu += i
             console.log(dataItem);
-        } else if (!key.startsWith('menu') && !key.startsWith('restauration') && !key.startsWith('chevalet')) {
+        } else if (!key.startsWith('menu') && !key.startsWith('restauration') && !key.startsWith('chevalet') && !key.startsWith('order')) {
             console.log(key);
             const dataItem = JSON.parse(localStorage.getItem(key))
             dataItem.forEach(elt => {
