@@ -7,7 +7,7 @@ newOrder.forEach((item) => {
         console.log('click');
         // Générer un numéro de commande aléatoire unique
         const randomPart = Math.floor(Math.random() * 900) + 100;
-        const newOrderNumber = 'order'+ randomPart;
+        const newOrderNumber = 'Od'+ randomPart;
         // Sauvegarder ce numéro de commande dans le localStorage
         localStorage.setItem('order', newOrderNumber);
     });

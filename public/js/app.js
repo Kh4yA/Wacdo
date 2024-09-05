@@ -1,5 +1,11 @@
-import addCart from "./addCart.js";
-import hydratebubble from "./cartResponsive.js";
+// =====================================
+//              SOMMAIRE
+// =====================================
+// 1. Configuration et variables globales
+// 2. Gestion des événements
+// 4. Fonctions utilitaires
+// 5. Exécution du code principal
+import {hydratebubble, countItem} from "./cartResponsive.js";
 /***********  RECCUPERATION ET TRAITEMENT DE L'URL ***********/
 // Récupère l'URL actuelle
 const url = document.location.href;
@@ -8,7 +14,6 @@ let params = new URLSearchParams(window.location.search);
 // Récupère la valeur du paramètre 'choix'
 let choixRestauration = params.get("choix");
 const storage = localStorage;
-console.log(choixRestauration);
 
 storage.setItem("restauration", choixRestauration);
 /************ Declaration de la variable localstorage qui va contenir le panier  *************/
@@ -33,7 +38,7 @@ window.addEventListener("load", () => {
   nameCategory("menus");
   refreshOrderInfo();
   createTempalteCart();
-  hydratebubble();
+  hydratebubble(currentCart);
 });
 /********** AJAX ***********/
 /********** gerer l'etat selectionner ou non des cartes **********/
@@ -151,6 +156,7 @@ function construcTemplateItem(datas, category) {
     cardItem.setAttribute("data-category", category);
     cardItem.setAttribute("data-id", data.id);
     cardItem.setAttribute("data-nomMenu", data.nom);
+    cardItem.setAttribute("data-priceMenu", data.prix);
     cardItem.innerHTML = `
             <img src="${data.image}" alt="image d'un ${data.nom}">
             <p>${data.nom}</p>
@@ -159,7 +165,8 @@ function construcTemplateItem(datas, category) {
     cardItem.addEventListener("click", (e) => {
       let nomProduit = data.nom;
       let idProduit = data.id;
-      handleClickProduit(category, nomProduit, idProduit);
+      let prixProduit = parseFloat(data.prix);
+      handleClickProduit(category, nomProduit, idProduit, prixProduit);
     });
     container.appendChild(cardItem);
     //gere l'etat selected
@@ -175,12 +182,12 @@ let currentCategory = "menus";
  * @param {string} nomProduit
  * @param {string} idProduit
  */
-function handleClickProduit(category, nomProduit, idProduit) {
+function handleClickProduit(category, nomProduit, idProduit, prixProduit) {
   currentCategory = category;
   currentMenu.id_produit = idProduit;
-  category === "menus"
-    ? openModal(nomProduit, idProduit)
-    : createModalOther(category, idProduit);
+  currentMenu.price = prixProduit
+  currentMenu.quantite = 1
+  category === "menus" ? openModal(nomProduit, idProduit) : createModalOther(category, idProduit, prixProduit);
 }
 /**
  * gere l'ouverture de la modal
@@ -188,7 +195,7 @@ function handleClickProduit(category, nomProduit, idProduit) {
  * @param {*} idProduit
  * @returns
  */
-function openModal(nomProduit, idProduit) {
+function openModal(nomProduit, idProduit, prixProduit) {
   const menu = {
     title: "Une grosse faim ?",
     text: "Le menu maxi Best Of comprend un sandwich, une grande frite et une boisson 50 Cl",
@@ -222,18 +229,7 @@ function openModal(nomProduit, idProduit) {
   switch (currentCategory) {
     case "menus":
       modalContent = menu;
-      createModalMenu(
-        modalContent.title,
-        modalContent.text,
-        modalContent.image1,
-        modalContent.image2,
-        modalContent.choiceOne,
-        modalContent.choiceTwo,
-        modalContent.statut,
-        modalContent.nom,
-        modalContent.id,
-        modalContent.datas
-      );
+      createModalMenu(modalContent.title, modalContent.text,modalContent.image1,modalContent.image2,modalContent.choiceOne,modalContent.choiceTwo,modalContent.statut,modalContent.nom,modalContent.id,modalContent.datas);
       break;
     case "side":
       modalContent = side;
@@ -310,19 +306,10 @@ function closeModal(dialog) {
  * @param {int} idProduit
  * @param {string} nomProduit
  */
-async function createModalMenu(
-  title,
-  text,
-  image1,
-  image2,
-  choiceOne,
-  choiceTwo,
-  statut,
-  datas = []
-) {
+async function createModalMenu(title,text,image1,image2,choiceOne,choiceTwo,statut,datas = []) {
   // Vérifiez que `datas` est un tableau
   if (!Array.isArray(datas)) {
-    console.error("Les données des boissons ne sont pas un tableau :", datas);
+    console.warn("Les données des boissons ne sont pas un tableau :", datas);
     datas = [];
   }
   // Suppression de la modal existante
@@ -333,33 +320,27 @@ async function createModalMenu(
 
   const salade = await extractDatas("salades");
   const frite = await extractDatas("frites");
-  console.log(salade[0].image);
-  console.log(frite);
 
-  currentMenu.category = "menus";
+ currentMenu.category = "menus";
 
   const contentbtn = `
-        <div class="width40 card-modal flex item-center justify-center active" data-side=${choiceOne} data-id=${
-    frite[1].id
-  }>
+        <div class="width40 card-modal flex item-center justify-center active" data-side=${choiceOne} data-id=${frite[1].id}>
             <img src="${frite[1].image}" alt="Illustration" >
             <p>${choiceOne}</p>
         </div>
-        <div class="width40 card-modal flex item-center justify-center" data-side=${choiceTwo} data-id=${
-    frite[2].id
-  }>
+        <div class="width40 card-modal flex item-center justify-center" data-side=${choiceTwo} data-id=${frite[3].id
+    }>
             <img src="${frite[2].image}" alt="Illustration" >
             <p>${choiceTwo}</p>
         </div>
-        ${
-          statut === "side"
-            ? `<div class="width40 card-modal flex item-center justify-center "data-side=${salade[0].id}>
+        ${statut === "side"
+      ? `<div class="width40 card-modal flex item-center justify-center "data-side=${salade[0].id}>
         <img src="http://exam-back.mdaszczynski.mywebecom.ovh/public/wacdo/04e284f4fa8d56b2fdb9368b28453cd3.png" alt="Illustration" >
         <p>${salade[0].nom}</p>
     </div>
 `
-            : ""
-        }
+      : ""
+    }
         `;
 
   const contentBoissons =
@@ -367,15 +348,15 @@ async function createModalMenu(
       ? `
         <div class="slide-container-boissons flex">
             ${datas
-              .map(
-                (data) => `
+        .map(
+          (data) => `
                 <div class="width40 modal-card-boissons modal-card-boissons-active flex item-center justify-center" data-id=${data.id}>
                     <img src="${data.image}" alt="boisson ${data.nom}">
                     <p>${data.nom}</p>
                 </div>
             `
-              )
-              .join("")}
+        )
+        .join("")}
         </div>
     `
       : "<p>Aucune boisson disponible</p>";
@@ -385,9 +366,8 @@ async function createModalMenu(
   dialog.innerHTML = `
         <div>
             <div class="padding20px">
-                <button class="retour ${
-                  statut === "menu" && "d-none"
-                }">Retour</button>
+                <button class="retour ${statut === "menu" && "d-none"
+    }">Retour</button>
                 <div><button class="close"><img src="./public/wacdo/images/supprimer.png" alt="Fermer"></button></div>
             </div>
             <div class="modal-choice-content padding20px flex space-between margin-autoLR">
@@ -400,11 +380,10 @@ async function createModalMenu(
                 </div>
                 <div class='error-boisson d-none'><p class=" width100 text-center">Vous devez choisir une boisson</p></div>
                 <div class="modal-button">
-                    ${
-                      statut === "boissonsMenu"
-                        ? '<button class="btn-first validateCommande">Ajouter le menu à ma commande</button>'
-                        : '<button class="btn-first">Etape Suivante</button>'
-                    }
+                    ${statut === "boissonsMenu"
+      ? '<button class="btn-first validateCommande">Ajouter le menu à ma commande</button>'
+      : '<button class="btn-first">Etape Suivante</button>'
+    }
                 </div>
             </div>
         </div>
@@ -474,12 +453,10 @@ async function createModalMenu(
   const backButton = dialog.querySelector(".retour");
   backButton.addEventListener("click", handleBack);
 
-  console.log(currentMenu.taille);
-
   console.log(currentMenu);
   // ajouter la commande au panier
   const validateCommande = document.querySelector(".validateCommande");
-  validateCommande.addEventListener("click", () => {
+  validateCommande && validateCommande.addEventListener("click", () => {
     if (currentMenu.id_boisson === undefined) {
       errorBoisson.classList.remove("d-none");
       console.log("c'est vide");
@@ -491,7 +468,7 @@ async function createModalMenu(
     dialog.close();
     dialog.remove();
     createTempalteCart();
-    hydratebubble();
+    hydratebubble(currentCart);
   });
 }
 /**
@@ -499,7 +476,7 @@ async function createModalMenu(
  * @param {string} category
  * @param {int} idProduit ('id du produit séléctionner)
  */
-async function createModalOther(category, idProduit) {
+async function createModalOther(category, idProduit, prixProduit) {
   //definir le compteur d'article a 1 par defaut
   let count = 1;
   //definir la taille de la boisson a small par defaut
@@ -510,8 +487,11 @@ async function createModalOther(category, idProduit) {
     category: category,
     id_produit: idProduit,
     quantite: count,
+    price: prixProduit
   };
   category === "boissons" ? (articles.size = defaultSizeBoisson) : "";
+
+  console.log(articles);
 
   const datas = await extractDatas(category);
   const datasFiltered = datas.find((dataFind) => dataFind.id === idProduit);
@@ -589,12 +569,11 @@ async function createModalOther(category, idProduit) {
   btnAddCart.addEventListener("click", () => {
     // creattion de l'objet qui va contenire les infos
     console.log(articles);
-    // addCart(category, articles)
     currentCart.push(articles);
     dialogOther.close();
     dialogOther.remove();
     createTempalteCart();
-    hydratebubble();
+    hydratebubble(currentCart);
   });
   console.log(currentCart);
   // Appel de la fonction pour fermer la popup
@@ -604,19 +583,21 @@ async function createModalOther(category, idProduit) {
   const btnMoins = dialogOther.querySelector(".btn-moins");
   const btnPlus = dialogOther.querySelector(".btn-plus");
   const quantityDisplay = dialogOther.querySelector(".quantity-display");
+  let prixUnitaire = articles.price
   btnMoins.addEventListener("click", () => {
     if (count > 1) {
       count--;
       quantityDisplay.textContent = count;
       articles.quantite = count;
+      articles.price = prixUnitaire * count
     }
     console.log("moins", count);
   });
-
   btnPlus.addEventListener("click", () => {
     count++;
     quantityDisplay.textContent = count;
     articles.quantite = count;
+    articles.price = prixUnitaire * count
   });
 }
 /**
@@ -646,19 +627,14 @@ async function extractDatas(value = "") {
 function refreshOrderInfo() {
   const orderInfo = document.querySelector(".order-info");
   orderInfo.innerHTML = `
-    <p>Commande numéro</p>
-    ${
-      storage.getItem("restauration") === "sur_place"
-        ? "<p>Sur place</p>"
-        : `<p>${storage.getItem("restauration")}</p>
-            <div>
-            <p> <span class="font-size42px">${storage.getItem(
-              "order"
-            )}</span></p>
-        </div>
-`
-    }
-    `;
+  <div>
+      <p>Commande numéro</p>
+    ${storage.getItem("restauration") === "sur_place" ? "<p>Sur place</p>" : "<p>Emporter</p>"}
+  </div>
+    <div>
+      <p><span class="font-size42px">${storage.getItem("order")}</span></p>
+    </div>
+  `;
 }
 /**
  * genere le template du panier
@@ -681,9 +657,6 @@ async function createTempalteCart() {
     console.error("Erreur  :", error);
     return;
   }
-  console.log(cartBoisson);
-  console.log(cartMenu);
-  console.log(cartSalade);
 
   // Déclaration du total
   let total = 0;
@@ -692,7 +665,6 @@ async function createTempalteCart() {
   for (let data of currentCart) {
     let cardCart = document.createElement("div");
     cardCart.className = "menu padding-bottom20px";
-
     if (data.category.includes("menus")) {
       const menu = cartMenu.find((menuCurrent) => menuCurrent.id === data.id_produit);
       const salade = cartSalade.find((saladeCurrent) => saladeCurrent.id == data.id_side);
@@ -701,22 +673,22 @@ async function createTempalteCart() {
       if (!menu) {
         console.error("Menu non trouvé pour l'id:", data.id_produit);
         continue; // Passer à l'article suivant si le menu n'est pas trouvé
-    }
+      }
 
-      const prixMenu = parseFloat(menu.prix);
-      total += data.taille !== "maxi" ? prixMenu : prixMenu + 0.5;
+      // const prixMenu = parseFloat(data.price);
+      // total += data.taille !== "maxi" ? prixMenu : prixMenu + 0.5;
 
       let accompagnement = '';
       if (data.side === 'frite' || data.side === 'patatoes') {
-          accompagnement = data.side;
+        accompagnement = data.side;
       } else if (salade) {
-          accompagnement = salade.nom;
+        accompagnement = salade.nom;
       } else {
-          accompagnement = 'accompagnement non trouvé';
+        accompagnement = 'accompagnement non trouvé';
       }
       cardCart.innerHTML = `
                 <div class="flex item-center space-between">
-                    <h3>${data.taille === "maxi"? `1 Maxi Best Of ${menu.nom}`: `1 Best Of ${menu.nom}`}</h3>
+                    <h3>${data.taille === "maxi" ? `1 Maxi Best Of ${menu.nom}` : `1 Best Of ${menu.nom}`}</h3>
                     <img src="./public/wacdo/images/trash.png" alt="logo d'une poubelle pour la suppression" class="delete-item-cart" data-id="${data.id_produit}" data-price='${data.price}'>
                 </div>
                 <ul>
@@ -739,40 +711,40 @@ async function createTempalteCart() {
         continue;
       }
 
-      const prixArticle = parseFloat(article.prix);
-      if (data.category === "boissons") {
-        total += data.size === "small" ? prixArticle : prixArticle + 0.5;
-      } else {
-        total += prixArticle * data.quantite;
-      }
+      // const prixArticle = parseFloat(data.price);
+      // if (data.category === "boissons") {
+      //   total += data.size === "small" ? prixArticle : prixArticle + 0.5;
+      // } else {
+      //   total += prixArticle * data.quantite;
+      // }
 
       cardCart.innerHTML = `
                 <div class="flex item-center space-between">
-                    <h3>${data.quantite} x ${article.nom} ${data.category === "boissons"? `${data.size === "small" ? "30cl" : "50cl"}`: ""}</h3>
+                    <h3>${data.quantite} x ${article.nom} ${data.category === "boissons" ? `${data.size === "small" ? "30cl" : "50cl"}` : ""}</h3>
                     <img src="./public/wacdo/images/trash.png" alt="logo d'une poubelle pour la suppression" class="delete-item-cart" data-id="${data.id_produit}" data-price='${data.price}'></div>`;
-            container.appendChild(cardCart);
-        }
+      container.appendChild(cardCart);
+    }
   }
-
   console.log(total);
   // Affichage du prix total
   const price = document.querySelector(".price");
-  price.innerHTML = `<p><span class="font-size42px">${parseFloat(total).toFixed(
-    2
-  )}</span></p>`;
+  price.innerHTML = `<p><span class="font-size42px">${caclulSum(currentCart)}</span></p>`;
 
   // Gestion du bouton de suppression d'article
   container.addEventListener("click", (e) => {
     if (e.target.classList.contains("delete-item-cart")) {
-      const id = e.target.getAttribute("data-id");
-      const price = parseFloat(e.target.getAttribute("data-price"));
-        total -= price;
+        const id = parseInt(e.target.getAttribute("data-id"))
+        const price = parseFloat(e.target.getAttribute("data-price"));
         const priceElement = document.querySelector(".price span");
         priceElement.textContent = parseFloat(total).toFixed(2);
-      currentCart = currentCart.filter((item) => item.id != id);
-      e.target.closest(".menu").remove();
+        currentCart = currentCart.filter((item) => item.id_produit !== id);
+        e.target.closest(".menu").remove();
+        console.log(currentCart);
+        // Mettre à jour d'autres éléments si nécessaire
+        hydratebubble(currentCart);
+        caclulSum(currentCart)
     }
-  });
+});
 
   // Préparer les données à envoyer lors du paiement
   function prepareJSON() {
@@ -784,40 +756,50 @@ async function createTempalteCart() {
       data.restauration = localStorage.getItem("restauration");
     }
     data.composition = currentCart;
+    countItem(data)
     return data;
   }
-
-  // Gestion du bouton payer
-  const pay = document.getElementById("pay");
-  pay.addEventListener("click", () => {
+  const pay = document.getElementById("payOrder");
+// Supprimer tout événement attaché précédemment pour éviter les doublons
+pay.removeEventListener("click", handlePayClick);
+  // Fonction qui sera appelée lors du clic
+  function handlePayClick() {
+    pay.disabled = true; // Désactiver le bouton après le premier clic
     const data = prepareJSON();
-    console.log(
-      `Le json avant la requete ressembel a ca ${JSON.stringify(data)}`
-    );
-    if (localStorage.getItem("restauration") === "emporter") {
-      fetch("http://exam-back.mdaszczynski.mywebecom.ovh/API_wacdo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    console.log(`Le json avant la requete ressemble à ça ${JSON.stringify(data)}`);
+
+    fetch("http://exam-back.mdaszczynski.mywebecom.ovh/API_wacdo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Erreur de requête");
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Erreur de requête");
-          }
-        })
-        .then((data) => {
-          console.log("Réponse du serveur:", data);
-          window.location.href = 'confirmation.html';
-        })
-        .catch((error) => {
-          console.error("Erreur lors de l'envoi de la requête :", error);
-        });
-    } else {
-      window.location.href = 'validation.html';
-    }
-  });
+      .then((data) => {
+        console.log("Réponse du serveur:", data);
+        // Réactiver le bouton si nécessaire ou rediriger
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi de la requête :", error);
+        pay.disabled = false;
+      });
+  }
+  // Ajouter l'événement 'click' une seule fois
+  pay.addEventListener("click", handlePayClick);
 }
+function caclulSum(cart) {
+  const sum = cart.reduce((total, item) => total + (item.price * item.quantite), 0).toFixed(2)|| '0.00';
+  const sumElement = document.querySelector(".price span");
+  if (sumElement) {
+      sumElement.textContent = sum;
+  }
+  return sum;
+}
+

@@ -11,31 +11,17 @@ console.log(localStorage);
  * Compte le d'article stocker dans le localStorage
  * @returns {integer} (Le nombre d'article du panier)
  */
-export function countItem() {
-    let countMenu = 0
-    let countOther = 0
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('menu')) {
-            const dataItem = JSON.parse(localStorage.getItem(key))
-            countMenu += i
-            console.log(dataItem);
-        } else if (!key.startsWith('menu') && !key.startsWith('restauration') && !key.startsWith('chevalet') && !key.startsWith('order')) {
-            console.log(key);
-            const dataItem = JSON.parse(localStorage.getItem(key))
-            dataItem.forEach(elt => {
-                countOther += elt.quantite;
-            });
-        }
+export function countItem(data) {
+    if (!data || typeof data !== 'object') {
+        return 0;
     }
-    console.log((countMenu + countOther));
-    return ((countMenu + countOther));
+    return (Object.keys(data).length);
 }
 
-export default function hydratebubble() {
+export function hydratebubble(data) {
     const bubble = document.querySelector('.bubble')
     bubble.innerHTML = ''
     const content = document.createElement('span')
-    content.innerHTML = `<span>${countItem()}</span>`
+    content.innerHTML = `<span>${countItem(data)}</span>`
     bubble.appendChild(content)
 }
