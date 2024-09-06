@@ -28,7 +28,7 @@ valideEasel.addEventListener('click', (e) => {
     const result = {
         easel: easelNumber
     };
-    addCart('chevalet', result);
+localStorage.setItem('chevalet', result);
     window.location.href = 'confirmation.html'
 });
 
